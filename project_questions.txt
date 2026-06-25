@@ -1,0 +1,113 @@
+PROJECT-BASED QUESTIONS WITH SHORT ANSWERS (Child Malnutrition Prediction)
+
+Imputation Questions
+1. Q: What is imputation, and why is it necessary in this project?
+   A: It fills missing values so models can train and predict without errors.
+2. Q: Why did we choose median imputation for numeric features?
+   A: Median is stable and less affected by outliers than mean.
+3. Q: Why did we choose mode/constant filling for some categorical or flag features?
+   A: Flags/categories should keep valid discrete values, not averages.
+4. Q: What problems occur if we train models without handling missing values?
+   A: Many algorithms fail or produce unreliable outputs.
+5. Q: Why must imputation be fitted on training data only?
+   A: To avoid using test information during training.
+6. Q: How does data leakage happen if imputation is done before train-test split?
+   A: Statistics from test data leak into train preprocessing.
+7. Q: What is the impact of imputing all-NaN columns with constant 0?
+   A: It keeps feature count consistent and avoids dropped columns.
+8. Q: How did we handle columns that became fully missing after cleaning?
+   A: We used constant fill (0) and preserved them in feature order.
+9. Q: Why did feature count mismatch happen during inference (33 vs 35)?
+   A: Old imputer dropped fully empty columns during transform.
+10. Q: How does keep_empty_features=True help in SimpleImputer?
+    A: It prevents empty columns from being silently removed.
+
+Data Preprocessing Questions
+11. Q: Why did we load only selected columns from the .sav file?
+    A: To reduce memory usage and speed up processing.
+12. Q: How were NFHS missing codes like 9998/9999 handled?
+    A: Replaced with NaN, then imputed later.
+13. Q: Why were z-score columns divided by 100?
+    A: They are stored as scaled integers in the raw file.
+14. Q: Why was haemoglobin divided by 10?
+    A: It is stored as g/dL × 10 in source data.
+15. Q: How did we identify that B4 is the correct child sex column?
+    A: We inspected available DHS columns and validated distributions.
+16. Q: Why were some anthropometric flags re-derived from z-scores?
+    A: Original flag fields were noisy or mostly invalid.
+17. Q: What is age-aware imputation, and where was it used?
+    A: Age-based filling for food/deworming fields where not applicable.
+18. Q: How were food recall features treated for children under 6 months?
+    A: Missing values were set to 0 for non-applicable recall.
+19. Q: Why did we map H11 values from {0,2} to {0,1}?
+    A: To make fever a standard binary feature.
+20. Q: Why did we remove leakage features (whz, haz, anaemia_level) in training?
+    A: They are too close to target logic and inflate scores.
+
+Target Engineering Questions
+21. Q: How did we define deficiency_type classes?
+    A: Rule-based risks for Protein_Energy, Iron_Anaemia, Vitamin_A, else None.
+22. Q: What is the logic behind Protein_Energy risk labeling?
+    A: Mainly severe wasting proxy (very low WHZ).
+23. Q: How is Iron_Anaemia risk identified from HW56 and HW57?
+    A: Low haemoglobin or moderate/severe anaemia class.
+24. Q: How is Vitamin_A risk inferred in this dataset?
+    A: No Vit-A supplementation plus stunting condition.
+25. Q: How is severity_score computed and bounded to 0-100?
+    A: Weighted components from WHZ, HAZ, anaemia; then clipped to 0-100.
+26. Q: Why is class priority important when multiple risks are true?
+    A: It ensures each sample gets one final class label.
+27. Q: How did we handle unknown/invalid target values?
+    A: Marked as Unknown and excluded from training.
+
+Model Training Questions
+28. Q: Why did we train both a classifier and regressor?
+    A: One predicts type, the other predicts severity level.
+29. Q: Why was RandomForest chosen for baseline/final models?
+    A: It is robust, simple, and works well on tabular mixed data.
+30. Q: How did we evaluate classification performance (Macro-F1)?
+    A: Computed F1 per class and averaged equally.
+31. Q: Why is Macro-F1 preferred with imbalanced classes?
+    A: It gives minority classes equal importance.
+32. Q: How did we evaluate regression performance (MAE, R2)?
+    A: MAE for average error and R2 for explained variance.
+33. Q: Why were train/val/test splits used instead of just train/test?
+    A: Validation helps tune choices without touching test data.
+34. Q: How do we ensure reproducibility in model training?
+    A: Fixed random_state and consistent preprocessing pipeline.
+
+Deployment Questions
+35. Q: How does FastAPI consume model artifacts for prediction?
+    A: Loads saved pkl files and runs preprocessing + inference.
+36. Q: What input format does the /predict endpoint expect?
+    A: JSON with "rows": [ {feature:value}, ... ].
+37. Q: How does the backend handle missing columns from frontend input?
+    A: Reindexes to expected columns and fills using training stats.
+38. Q: Why do we align input columns using feature_columns.pkl?
+    A: Model expects exact feature order and count.
+39. Q: Why is model_metadata.json useful in production?
+    A: Stores classes, feature names, and model version info.
+40. Q: How does Streamlit interact with FastAPI in this project?
+    A: Streamlit sends HTTP requests and displays predictions.
+
+Debugging and Practical Questions
+41. Q: What caused the classification_report TypeError with float target names?
+    A: target_names contained non-string values (like NaN/float).
+42. Q: How was that TypeError fixed?
+    A: Converted class names to strings before reporting.
+43. Q: What caused the DataFrame shape mismatch during imputation?
+    A: Imputer output had fewer columns after dropping empty features.
+44. Q: How did we resolve old-imputer behavior during inference?
+    A: Rebuilt full feature set manually using imputer statistics.
+45. Q: What checks should be done before pushing ML code to GitHub?
+    A: Run scripts once, confirm API works, and verify file paths.
+46. Q: Why should dataset and generated artifacts be ignored in git?
+    A: Large/private files should not be shared in source control.
+47. Q: How would you explain this project in 1 minute to an interviewer?
+    A: It predicts malnutrition type and severity from NFHS child health data.
+48. Q: What are the main limitations of this current pipeline?
+    A: Rule-based targets, class imbalance, and static feature assumptions.
+49. Q: What improvements would you implement in version 2?
+    A: Better target design, calibration, stronger models, and monitoring.
+50. Q: How would you monitor model drift after deployment?
+    A: Track input distributions, class rates, and periodic performance checks.

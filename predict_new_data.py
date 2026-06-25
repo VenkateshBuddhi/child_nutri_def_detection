@@ -68,7 +68,7 @@ def main():
     y_test_cls = pd.read_csv(base / "processed" / "y_test.csv")["deficiency_type"]
     y_test_score = pd.read_csv(base / "processed" / "y_score_test.csv")["severity_score"]
 
-    sample_idx = [0, 633, 582, 533, 434]  # 5 sample indices from test set
+    sample_idx = [0, 633, 582, 53, 434]  # 5 sample indices from test set
     X_sample = X_test.iloc[sample_idx].copy()
     y_true_cls = y_test_cls.iloc[sample_idx].reset_index(drop=True)
     y_true_score = y_test_score.iloc[sample_idx].reset_index(drop=True)

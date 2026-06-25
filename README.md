@@ -151,3 +151,31 @@ python predict_new_data.py
 - Dataset and generated artifacts are excluded using `.gitignore`.
 - Keep model and preprocessing versions aligned (retrain after major preprocessing changes).
 - For deployment, run FastAPI and Streamlit as separate services.
+
+
+======================================================================
+MODEL TEST RESULTS ON TEST DATA
+======================================================================
+Classifier - Macro F1 : 0.4464
+Regressor  - MAE      : 2.0345
+Regressor  - RMSE     : 3.7958
+Regressor  - R2       : 0.9661
+----------------------------------------------------------------------
+Saved metadata values:
+test_macro_f1         : 0.7808
+test_mae_regression   : 2.0345
+test_r2_regression    : 0.9661
+----------------------------------------------------------------------
+Classification report:
+                precision    recall  f1-score   support
+
+  Iron_Anaemia     0.9803    0.9179    0.9481     32428
+          None     0.0000    0.0000    0.0000         0
+Protein_Energy     0.6718    0.8288    0.7421      4591
+     Vitamin_A     0.3898    0.8872    0.5417      1011
+
+     micro avg     0.7399    0.9064    0.8147     38030
+     macro avg     0.5105    0.6585    0.5580     38030
+  weighted avg     0.9274    0.9064    0.9124     38030
+
+======================================================================
